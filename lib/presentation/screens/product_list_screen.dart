@@ -60,48 +60,89 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
             ),
           ),
-          Expanded(
-            child: controller.isLoading && controller.products.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: controller.refresh,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16),
-                      itemCount:
-                          controller.products.length +
-                          (controller.isLoadingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= controller.products.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-
-                        final product = controller.products[index];
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: ProductCard(
-                            product: product,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => ProductDetailScreen(
-                                    productId: product.id,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-          ),
+          Expanded(child: _buildContent(controller)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildContent(ProductController controller) {
+    if (controller.isLoading && controller.products.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.errorMessage != null && controller.products.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48),
+              const SizedBox(height: 12),
+              Text(controller.errorMessage!, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () {
+                  if (controller.searchQuery.isNotEmpty) {
+                    controller.onSearchChanged(controller.searchQuery);
+                  } else {
+                    controller.loadProducts();
+                  }
+                },
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (controller.products.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_off, size: 48),
+            SizedBox(height: 12),
+            Text('No products found'),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: controller.refresh,
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        itemCount:
+            controller.products.length + (controller.isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= controller.products.length) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          final product = controller.products[index];
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: ProductCard(
+              product: product,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProductDetailScreen(productId: product.id),
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
