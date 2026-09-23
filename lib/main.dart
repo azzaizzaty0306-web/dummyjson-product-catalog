@@ -21,8 +21,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProductController(repository: repository)..loadProducts(),
+    return MultiProvider(
+      providers: [
+        Provider<ProductRepository>.value(value: repository),
+        ChangeNotifierProvider(
+          create: (_) =>
+              ProductController(repository: repository)..loadProducts(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Product Catalog',
