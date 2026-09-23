@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../data/models/product.dart';
 import '../../data/repositories/product_repository.dart';
+import '../controllers/product_controller.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -79,9 +80,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final item = product!;
+    final controller = context.watch<ProductController>();
+    final isFavorite = controller.isFavorite(item.id);
 
     return Scaffold(
-      appBar: AppBar(title: Text(item.title)),
+      appBar: AppBar(
+        title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
+          IconButton(
+            onPressed: () {
+              controller.toggleFavorite(item.id);
+            },
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
