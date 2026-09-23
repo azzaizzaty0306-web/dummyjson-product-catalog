@@ -15,6 +15,8 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   final ScrollController _scrollController = ScrollController();
 
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +38,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -80,10 +83,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
-              onChanged: controller.onSearchChanged,
+              controller: _searchController,
+              onChanged: (value) {
+                controller.onSearchChanged(value);
+                setState(() {});
+              },
               decoration: InputDecoration(
                 hintText: 'Search products...',
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        tooltip: 'Clear search',
+                        onPressed: () {
+                          _searchController.clear();
+                          controller.onSearchChanged('');
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.close),
+                      )
+                    : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
