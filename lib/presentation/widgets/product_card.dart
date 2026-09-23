@@ -22,15 +22,37 @@ class ProductCard extends StatelessWidget {
               child: Image.network(
                 product.thumbnail,
                 fit: BoxFit.cover,
+
+                // Placeholder semasa image tengah load
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
                   }
 
-                  return const Center(child: CircularProgressIndicator());
+                  return Container(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child: const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  );
                 },
+
+                // Fallback jika image gagal load
                 errorBuilder: (context, error, stackTrace) {
-                  return const Center(child: Icon(Icons.broken_image_outlined));
+                  return Container(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child: const Center(
+                      child: Icon(Icons.broken_image_outlined, size: 32),
+                    ),
+                  );
                 },
               ),
             ),

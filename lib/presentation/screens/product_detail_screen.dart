@@ -87,27 +87,33 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         children: [
           SizedBox(
             height: 280,
-            child: PageView.builder(
-              itemCount: item.images.length,
-              itemBuilder: (context, index) {
-                return Image.network(
-                  item.images[index],
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) {
-                      return child;
-                    }
+            child: item.images.isEmpty
+                ? const Center(
+                    child: Icon(Icons.image_not_supported_outlined, size: 64),
+                  )
+                : PageView.builder(
+                    itemCount: item.images.length,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        item.images[index],
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) {
+                            return child;
+                          }
 
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Icon(Icons.broken_image_outlined, size: 64),
-                    );
-                  },
-                );
-              },
-            ),
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(Icons.broken_image_outlined, size: 64),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
           const SizedBox(height: 24),
           Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
