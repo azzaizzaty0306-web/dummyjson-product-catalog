@@ -34,30 +34,49 @@ class ProductController extends ChangeNotifier {
   }
 
   List<Product> get products {
-    final items = List<Product>.from(_products);
+    final source = _showFavoritesOnly
+        ? _products
+              .where((product) => _favoriteProductIds.contains(product.id))
+              .toList()
+        : List<Product>.from(_products);
 
     switch (_sortOption) {
       case ProductSortOption.priceLowToHigh:
-        items.sort((a, b) => a.price.compareTo(b.price));
+        source.sort((a, b) => a.price.compareTo(b.price));
         break;
 
       case ProductSortOption.priceHighToLow:
-        items.sort((a, b) => b.price.compareTo(a.price));
+        source.sort((a, b) => b.price.compareTo(a.price));
         break;
 
       case ProductSortOption.ratingHighToLow:
-        items.sort((a, b) => b.rating.compareTo(a.rating));
+        source.sort((a, b) => b.rating.compareTo(a.rating));
         break;
 
       case ProductSortOption.none:
         break;
     }
 
-    return List.unmodifiable(items);
+    return List.unmodifiable(source);
   }
 
   void setSortOption(ProductSortOption option) {
     _sortOption = option;
+    notifyListeners();
+  }
+
+  List<Product> get favoriteProducts {
+    return products
+        .where((product) => _favoriteProductIds.contains(product.id))
+        .toList();
+  }
+
+  bool _showFavoritesOnly = false;
+
+  bool get showFavoritesOnly => _showFavoritesOnly;
+
+  void toggleFavoritesFilter() {
+    _showFavoritesOnly = !_showFavoritesOnly;
     notifyListeners();
   }
 

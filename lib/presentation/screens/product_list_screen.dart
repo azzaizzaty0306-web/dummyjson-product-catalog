@@ -50,6 +50,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: const Text('Product Catalog'),
         actions: [
+          IconButton(
+            tooltip: controller.showFavoritesOnly
+                ? 'Show all products'
+                : 'Show favorites only',
+            onPressed: controller.toggleFavoritesFilter,
+            icon: Icon(
+              controller.showFavoritesOnly
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+            ),
+          ),
+
           PopupMenuButton<ProductSortOption>(
             tooltip: 'Sort products',
             initialValue: controller.sortOption,
