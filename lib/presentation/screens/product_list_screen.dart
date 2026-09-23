@@ -44,7 +44,37 @@ class _ProductListScreenState extends State<ProductListScreen> {
     final controller = context.watch<ProductController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Product Catalog')),
+      appBar: AppBar(
+        title: const Text('Product Catalog'),
+        actions: [
+          PopupMenuButton<ProductSortOption>(
+            tooltip: 'Sort products',
+            initialValue: controller.sortOption,
+            onSelected: controller.setSortOption,
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem(
+                  value: ProductSortOption.none,
+                  child: Text('Default'),
+                ),
+                PopupMenuItem(
+                  value: ProductSortOption.priceLowToHigh,
+                  child: Text('Price: Low to High'),
+                ),
+                PopupMenuItem(
+                  value: ProductSortOption.priceHighToLow,
+                  child: Text('Price: High to Low'),
+                ),
+                PopupMenuItem(
+                  value: ProductSortOption.ratingHighToLow,
+                  child: Text('Rating: High to Low'),
+                ),
+              ];
+            },
+            icon: const Icon(Icons.sort),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

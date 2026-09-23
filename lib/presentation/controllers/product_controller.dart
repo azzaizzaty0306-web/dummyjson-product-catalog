@@ -4,7 +4,14 @@ import 'package:flutter/foundation.dart';
 import '../../data/models/product.dart';
 import '../../data/repositories/product_repository.dart';
 
+enum ProductSortOption { none, priceLowToHigh, priceHighToLow, ratingHighToLow }
+
 class ProductController extends ChangeNotifier {
+
+  ProductSortOption _sortOption = ProductSortOption.none;
+
+  ProductSortOption get sortOption => _sortOption;
+
   final ProductRepository repository;
 
   ProductController({required this.repository});
@@ -26,7 +33,33 @@ class ProductController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Product> get products => List.unmodifiable(_products);
+  List<Product> get products {
+    final items = List<Product>.from(_products);
+
+    switch (_sortOption) {
+      case ProductSortOption.priceLowToHigh:
+        items.sort((a, b) => a.price.compareTo(b.price));
+        break;
+
+      case ProductSortOption.priceHighToLow:
+        items.sort((a, b) => b.price.compareTo(a.price));
+        break;
+
+      case ProductSortOption.ratingHighToLow:
+        items.sort((a, b) => b.rating.compareTo(a.rating));
+        break;
+
+      case ProductSortOption.none:
+        break;
+    }
+
+    return List.unmodifiable(items);
+  }
+
+  void setSortOption(ProductSortOption option) {
+    _sortOption = option;
+    notifyListeners();
+  }
 
   bool isLoading = false;
   bool isLoadingMore = false;
