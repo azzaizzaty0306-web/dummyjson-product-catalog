@@ -18,6 +18,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Product? product;
   String? errorMessage;
   bool isLoading = true;
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
@@ -99,35 +100,74 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SizedBox(
-            height: 280,
-            child: item.images.isEmpty
-                ? const Center(
-                    child: Icon(Icons.image_not_supported_outlined, size: 64),
-                  )
-                : PageView.builder(
-                    itemCount: item.images.length,
-                    itemBuilder: (context, index) {
-                      return Image.network(
-                        item.images[index],
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, progress) {
-                          if (progress == null) {
-                            return child;
-                          }
+          Column(
+            children: [
+              SizedBox(
+                height: 280,
+                child: item.images.isEmpty
+                    ? const Center(
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 64,
+                        ),
+                      )
+                    : PageView.builder(
+                        itemCount: item.images.length,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentImageIndex = index;
+                          });
+                        },
+                        itemBuilder: (context, index) {
+                          return Image.network(
+                            item.images[index],
+                            fit: BoxFit.contain,
+                            loadingBuilder: (context, child, progress) {
+                              if (progress == null) {
+                                return child;
+                              }
 
-                          return const Center(
-                            child: CircularProgressIndicator(),
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 64,
+                                ),
+                              );
+                            },
                           );
                         },
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(Icons.broken_image_outlined, size: 64),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                      ),
+              ),
+
+              if (item.images.length > 1) ...[
+                const SizedBox(height: 12),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(item.images.length, (index) {
+                    final isActive = index == _currentImageIndex;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: isActive ? 18 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 24),
           Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
