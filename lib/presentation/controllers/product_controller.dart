@@ -10,6 +10,21 @@ class ProductController extends ChangeNotifier {
   ProductController({required this.repository});
 
   final List<Product> _products = [];
+  final Set<int> _favoriteProductIds = {};
+
+  bool isFavorite(int productId) {
+    return _favoriteProductIds.contains(productId);
+  }
+
+  void toggleFavorite(int productId) {
+    if (_favoriteProductIds.contains(productId)) {
+      _favoriteProductIds.remove(productId);
+    } else {
+      _favoriteProductIds.add(productId);
+    }
+
+    notifyListeners();
+  }
 
   List<Product> get products => List.unmodifiable(_products);
 

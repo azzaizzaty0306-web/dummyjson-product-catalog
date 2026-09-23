@@ -133,6 +133,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
             padding: const EdgeInsets.only(bottom: 12),
             child: ProductCard(
               product: product,
+              isFavorite: controller.isFavorite(product.id),
+              onFavoriteTap: () {
+                controller.toggleFavorite(product.id);
+              },
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
