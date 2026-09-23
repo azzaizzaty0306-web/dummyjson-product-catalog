@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/product_controller.dart';
 import '../widgets/product_card.dart';
+import 'product_detail_screen.dart';
 
 class ProductListScreen extends StatelessWidget {
   const ProductListScreen({super.key});
@@ -20,7 +21,17 @@ class ProductListScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final product = controller.products[index];
 
-                return ProductCard(product: product);
+                return ProductCard(
+                  product: product,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ProductDetailScreen(productId: product.id),
+                      ),
+                    );
+                  },
+                );
               },
             ),
     );
